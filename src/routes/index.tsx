@@ -164,7 +164,7 @@ function ProductivityOverview() {
             </div>
             <div className="mt-2 text-3xl font-semibold tracking-tight">{c.value}</div>
             <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
-              <div className="h-full gradient-brand" style={{ width: `${60 + Math.random() * 30}%` }} />
+              <div className="h-full gradient-brand" style={{ width: `${c.pct}%` }} />
             </div>
           </Card>
         ))}
