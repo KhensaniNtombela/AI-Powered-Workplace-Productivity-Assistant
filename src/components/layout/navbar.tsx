@@ -35,7 +35,8 @@ const featureGroups = [
   },
 ];
 
-const navLinks = [
+type NavLink = { to: string; label: string; mega?: boolean };
+const navLinks: NavLink[] = [
   { to: "/", label: "Home" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/features", label: "Features", mega: true },
@@ -44,7 +45,7 @@ const navLinks = [
   { to: "/pricing", label: "Pricing" },
   { to: "/support", label: "Support" },
   { to: "/about", label: "About" },
-] as const;
+];
 
 export function Navbar() {
   const { theme, toggle } = useTheme();
