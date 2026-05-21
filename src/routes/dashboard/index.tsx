@@ -87,13 +87,13 @@ function Overview() {
             <Badge variant="outline">5 of 8 done</Badge>
           </div>
           <div className="space-y-2">
-            {[
+            {([
               { t: "Finish Q3 review deck", s: "done" },
               { t: "Reply to investor email thread", s: "progress" },
               { t: "Sign vendor contract", s: "overdue" },
               { t: "Deep work — spec v2", s: "scheduled" },
               { t: "Async standup update", s: "scheduled" },
-            ].map(x => <TaskRow key={x.t} {...x} />)}
+            ] as const).map(x => <TaskRow key={x.t} {...x} />)}
           </div>
         </Card>
 
