@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Checkbox } from "@/components/ui/checkbox";
 import { Bell, Brain, Calendar, CheckCircle2, Clock, Flame, ListTodo, Sparkles, TrendingUp, Zap } from "lucide-react";
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard/")({ component: Overview });
 
@@ -18,14 +19,24 @@ const focusData = [
 
 function Overview() {
   const [snapOpen, setSnapOpen] = useState(false);
+  const [name, setName] = useState("there");
   useEffect(() => { const t = setTimeout(() => setSnapOpen(true), 600); return () => clearTimeout(t); }, []);
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase.from("profiles").select("display_name").eq("id", user.id).maybeSingle();
+      const meta = (user.user_metadata ?? {}) as { display_name?: string; full_name?: string };
+      setName(profile?.display_name || meta.display_name || meta.full_name || user.email?.split("@")[0] || "there");
+    })();
+  }, []);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <Badge variant="outline" className="rounded-full">Tuesday, today</Badge>
-          <h1 className="mt-2 text-3xl font-bold">Good morning, Ada ☀️</h1>
+          <h1 className="mt-2 text-3xl font-bold">Good morning, {name} ☀️</h1>
           <p className="text-sm text-muted-foreground">You're in a 3-day flow streak. Let's make today count.</p>
         </div>
         <div className="flex gap-2">

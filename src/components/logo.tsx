@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-export function Logo({ className = "" }: { className?: string }) {
+export function Logo({ className = "", compact = false }: { className?: string; compact?: boolean }) {
   return (
     <Link to="/" className={`group flex items-center gap-2 ${className}`}>
       <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl gradient-brand text-primary-foreground shadow-lg shadow-emerald-500/20 transition-transform group-hover:scale-105">
@@ -17,7 +17,9 @@ export function Logo({ className = "" }: { className?: string }) {
       </span>
       <span className="flex flex-col leading-none">
         <span className="font-display text-[15px] font-bold tracking-tight text-foreground">FlowState <span className="text-gradient">AI</span></span>
-        <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">work · focus · flow</span>
+        {!compact && (
+          <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">work · focus · flow</span>
+        )}
       </span>
     </Link>
   );
