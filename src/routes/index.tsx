@@ -198,9 +198,6 @@ function KeyFeatures() {
             </div>
             <h3 className="text-lg font-semibold">{f.title}</h3>
             <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
-            <div className="mt-4 flex items-center text-sm font-medium text-emerald-500 opacity-0 transition-opacity group-hover:opacity-100">
-              Explore <ChevronRight className="ml-1 h-4 w-4" />
-            </div>
           </Card>
         ))}
       </div>
