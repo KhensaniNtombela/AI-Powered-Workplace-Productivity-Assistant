@@ -148,10 +148,10 @@ function StatTile({ icon, label, value, hint }: { icon: React.ReactNode; label: 
 
 function ProductivityOverview() {
   const cards = [
-    { icon: ListTodo, label: "Tasks completed today", value: "14 / 18", color: "emerald" },
-    { icon: Clock, label: "Focus hours", value: "4h 32m", color: "cyan" },
-    { icon: Zap, label: "Productivity score", value: "92", color: "amber" },
-    { icon: CalendarCheck2, label: "Upcoming deadlines", value: "3 this week", color: "rose" },
+    { icon: ListTodo, label: "Tasks completed today", value: "14 / 18", color: "emerald", pct: 78 },
+    { icon: Clock, label: "Focus hours", value: "4h 32m", color: "cyan", pct: 65 },
+    { icon: Zap, label: "Productivity score", value: "92", color: "amber", pct: 88 },
+    { icon: CalendarCheck2, label: "Upcoming deadlines", value: "3 this week", color: "rose", pct: 72 },
   ];
   return (
     <section className="mx-auto max-w-7xl px-6 py-10">
@@ -164,7 +164,7 @@ function ProductivityOverview() {
             </div>
             <div className="mt-2 text-3xl font-semibold tracking-tight">{c.value}</div>
             <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
-              <div className="h-full gradient-brand" style={{ width: `${60 + Math.random() * 30}%` }} />
+              <div className="h-full gradient-brand" style={{ width: `${c.pct}%` }} />
             </div>
           </Card>
         ))}
