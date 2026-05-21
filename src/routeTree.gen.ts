@@ -18,6 +18,18 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as DashboardResearchRouteImport } from './routes/dashboard/research'
+import { Route as DashboardPlannerRouteImport } from './routes/dashboard/planner'
+import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
+import { Route as DashboardMusicRouteImport } from './routes/dashboard/music'
+import { Route as DashboardMeetingRouteImport } from './routes/dashboard/meeting'
+import { Route as DashboardFocusRouteImport } from './routes/dashboard/focus'
+import { Route as DashboardEmailRouteImport } from './routes/dashboard/email'
+import { Route as DashboardDiaryRouteImport } from './routes/dashboard/diary'
+import { Route as DashboardCalendarRouteImport } from './routes/dashboard/calendar'
+import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard/analytics'
+import { Route as DashboardAiRouteImport } from './routes/dashboard/ai'
 
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
@@ -64,6 +76,66 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardResearchRoute = DashboardResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPlannerRoute = DashboardPlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMusicRoute = DashboardMusicRouteImport.update({
+  id: '/music',
+  path: '/music',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMeetingRoute = DashboardMeetingRouteImport.update({
+  id: '/meeting',
+  path: '/meeting',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardFocusRoute = DashboardFocusRouteImport.update({
+  id: '/focus',
+  path: '/focus',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEmailRoute = DashboardEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDiaryRoute = DashboardDiaryRouteImport.update({
+  id: '/diary',
+  path: '/diary',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCalendarRoute = DashboardCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAiRoute = DashboardAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,6 +146,18 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
+  '/dashboard/ai': typeof DashboardAiRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/calendar': typeof DashboardCalendarRoute
+  '/dashboard/diary': typeof DashboardDiaryRoute
+  '/dashboard/email': typeof DashboardEmailRoute
+  '/dashboard/focus': typeof DashboardFocusRoute
+  '/dashboard/meeting': typeof DashboardMeetingRoute
+  '/dashboard/music': typeof DashboardMusicRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/planner': typeof DashboardPlannerRoute
+  '/dashboard/research': typeof DashboardResearchRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -84,6 +168,18 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
+  '/dashboard/ai': typeof DashboardAiRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/calendar': typeof DashboardCalendarRoute
+  '/dashboard/diary': typeof DashboardDiaryRoute
+  '/dashboard/email': typeof DashboardEmailRoute
+  '/dashboard/focus': typeof DashboardFocusRoute
+  '/dashboard/meeting': typeof DashboardMeetingRoute
+  '/dashboard/music': typeof DashboardMusicRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/planner': typeof DashboardPlannerRoute
+  '/dashboard/research': typeof DashboardResearchRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -96,6 +192,18 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
+  '/dashboard/ai': typeof DashboardAiRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/calendar': typeof DashboardCalendarRoute
+  '/dashboard/diary': typeof DashboardDiaryRoute
+  '/dashboard/email': typeof DashboardEmailRoute
+  '/dashboard/focus': typeof DashboardFocusRoute
+  '/dashboard/meeting': typeof DashboardMeetingRoute
+  '/dashboard/music': typeof DashboardMusicRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/planner': typeof DashboardPlannerRoute
+  '/dashboard/research': typeof DashboardResearchRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -109,6 +217,18 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/signup'
     | '/support'
+    | '/dashboard/ai'
+    | '/dashboard/analytics'
+    | '/dashboard/calendar'
+    | '/dashboard/diary'
+    | '/dashboard/email'
+    | '/dashboard/focus'
+    | '/dashboard/meeting'
+    | '/dashboard/music'
+    | '/dashboard/notifications'
+    | '/dashboard/planner'
+    | '/dashboard/research'
+    | '/dashboard/settings'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,6 +239,18 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/signup'
     | '/support'
+    | '/dashboard/ai'
+    | '/dashboard/analytics'
+    | '/dashboard/calendar'
+    | '/dashboard/diary'
+    | '/dashboard/email'
+    | '/dashboard/focus'
+    | '/dashboard/meeting'
+    | '/dashboard/music'
+    | '/dashboard/notifications'
+    | '/dashboard/planner'
+    | '/dashboard/research'
+    | '/dashboard/settings'
     | '/dashboard'
   id:
     | '__root__'
@@ -130,6 +262,18 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/signup'
     | '/support'
+    | '/dashboard/ai'
+    | '/dashboard/analytics'
+    | '/dashboard/calendar'
+    | '/dashboard/diary'
+    | '/dashboard/email'
+    | '/dashboard/focus'
+    | '/dashboard/meeting'
+    | '/dashboard/music'
+    | '/dashboard/notifications'
+    | '/dashboard/planner'
+    | '/dashboard/research'
+    | '/dashboard/settings'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -209,14 +353,122 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/research': {
+      id: '/dashboard/research'
+      path: '/research'
+      fullPath: '/dashboard/research'
+      preLoaderRoute: typeof DashboardResearchRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/planner': {
+      id: '/dashboard/planner'
+      path: '/planner'
+      fullPath: '/dashboard/planner'
+      preLoaderRoute: typeof DashboardPlannerRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/notifications': {
+      id: '/dashboard/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/notifications'
+      preLoaderRoute: typeof DashboardNotificationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/music': {
+      id: '/dashboard/music'
+      path: '/music'
+      fullPath: '/dashboard/music'
+      preLoaderRoute: typeof DashboardMusicRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/meeting': {
+      id: '/dashboard/meeting'
+      path: '/meeting'
+      fullPath: '/dashboard/meeting'
+      preLoaderRoute: typeof DashboardMeetingRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/focus': {
+      id: '/dashboard/focus'
+      path: '/focus'
+      fullPath: '/dashboard/focus'
+      preLoaderRoute: typeof DashboardFocusRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/email': {
+      id: '/dashboard/email'
+      path: '/email'
+      fullPath: '/dashboard/email'
+      preLoaderRoute: typeof DashboardEmailRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/diary': {
+      id: '/dashboard/diary'
+      path: '/diary'
+      fullPath: '/dashboard/diary'
+      preLoaderRoute: typeof DashboardDiaryRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/calendar': {
+      id: '/dashboard/calendar'
+      path: '/calendar'
+      fullPath: '/dashboard/calendar'
+      preLoaderRoute: typeof DashboardCalendarRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/analytics': {
+      id: '/dashboard/analytics'
+      path: '/analytics'
+      fullPath: '/dashboard/analytics'
+      preLoaderRoute: typeof DashboardAnalyticsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/ai': {
+      id: '/dashboard/ai'
+      path: '/ai'
+      fullPath: '/dashboard/ai'
+      preLoaderRoute: typeof DashboardAiRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
 interface DashboardRouteChildren {
+  DashboardAiRoute: typeof DashboardAiRoute
+  DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
+  DashboardCalendarRoute: typeof DashboardCalendarRoute
+  DashboardDiaryRoute: typeof DashboardDiaryRoute
+  DashboardEmailRoute: typeof DashboardEmailRoute
+  DashboardFocusRoute: typeof DashboardFocusRoute
+  DashboardMeetingRoute: typeof DashboardMeetingRoute
+  DashboardMusicRoute: typeof DashboardMusicRoute
+  DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardPlannerRoute: typeof DashboardPlannerRoute
+  DashboardResearchRoute: typeof DashboardResearchRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAiRoute: DashboardAiRoute,
+  DashboardAnalyticsRoute: DashboardAnalyticsRoute,
+  DashboardCalendarRoute: DashboardCalendarRoute,
+  DashboardDiaryRoute: DashboardDiaryRoute,
+  DashboardEmailRoute: DashboardEmailRoute,
+  DashboardFocusRoute: DashboardFocusRoute,
+  DashboardMeetingRoute: DashboardMeetingRoute,
+  DashboardMusicRoute: DashboardMusicRoute,
+  DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardPlannerRoute: DashboardPlannerRoute,
+  DashboardResearchRoute: DashboardResearchRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
