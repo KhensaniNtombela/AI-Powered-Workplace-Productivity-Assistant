@@ -1,11 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Brain, CalendarCheck2, CheckCircle2, Clock, Headphones, Layers, Sparkles, Zap, Waves, Mountain, Coffee, Moon, TreePine, Building2, Cloud, Mic2, ListTodo, MessageCircle, ChevronRight } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, Brain, CalendarCheck2, CheckCircle2, Clock, Headphones, Layers, Sparkles, Zap, Waves, Mountain, Coffee, Moon, TreePine, Building2, Cloud, Mic2, ListTodo, MessageCircle, Play } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { FloatingPlayer } from "@/components/floating-player";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
+import { usePlayer } from "@/components/player-provider";
+import { TRACKS } from "@/lib/audio-library";
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
