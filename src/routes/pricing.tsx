@@ -9,21 +9,15 @@ import { Badge } from "@/components/ui/badge";
 export const Route = createFileRoute("/pricing")({ component: PricingPage });
 
 const plans = [
-  {
-    name: "Starter", price: "$0", tag: "Free forever",
+  { name: "Starter", price: "$0", tag: "Free forever",
     features: ["20 AI requests / day", "Basic Pomodoro & sounds", "Daily Diary (limited)", "Single workspace"],
-    cta: "Start free",
-  },
-  {
-    name: "Pro", price: "$12", tag: "Most popular", featured: true,
+    cta: "Start free" },
+  { name: "Pro", price: "$12", tag: "Most popular", featured: true,
     features: ["Unlimited AI requests", "Full Focus Mode + Spaces", "Adaptive soundscapes", "Smart scheduling & analytics", "Calendar integrations"],
-    cta: "Start 14-day trial",
-  },
-  {
-    name: "Enterprise", price: "Custom", tag: "For teams",
+    cta: "Start 14-day trial" },
+  { name: "Enterprise", price: "Custom", tag: "For teams",
     features: ["Team collaboration", "AI workflow automation", "Advanced reporting", "SSO + admin controls", "Dedicated success manager"],
-    cta: "Talk to sales",
-  },
+    cta: "Talk to sales" },
 ];
 
 function PricingPage() {
@@ -48,12 +42,10 @@ function PricingPage() {
               </div>
               <ul className="mt-6 space-y-2.5">
                 {p.features.map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="mt-0.5 h-4 w-4 text-emerald-500" /> {f}
-                  </li>
+                  <li key={f} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 text-emerald-500" /> {f}</li>
                 ))}
               </ul>
-              <Link to="/signup">
+              <Link to="/signup" search={{ redirect: "/pricing" } as any}>
                 <Button className={`mt-7 w-full rounded-xl ${p.featured ? "gradient-brand text-primary-foreground" : ""}`} variant={p.featured ? "default" : "outline"}>{p.cta}</Button>
               </Link>
             </Card>

@@ -11,6 +11,9 @@ import {
 import appCss from "../styles.css?url";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { PlayerProvider } from "@/components/player-provider";
+import { I18nProvider } from "@/hooks/use-i18n";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 function NotFoundComponent() {
   return (
@@ -83,10 +86,15 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <Outlet />
-        <Toaster position="top-right" />
-      </ThemeProvider>
+      <I18nProvider>
+        <ThemeProvider>
+          <PlayerProvider>
+            <Outlet />
+            <ScrollToTop />
+            <Toaster position="top-right" />
+          </PlayerProvider>
+        </ThemeProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

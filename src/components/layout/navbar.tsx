@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, Globe, Moon, Search, Sun, Menu, X, Sparkles, ChevronDown, ArrowLeft, LogOut } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { useTheme } from "@/components/theme-provider";
@@ -14,6 +14,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useI18n, LANGUAGES } from "@/hooks/use-i18n";
+import { SEARCH_INDEX } from "@/lib/search-index";
 
 const featureGroups = [
   { title: "Focus Mode", accent: "from-emerald-400 to-cyan-400", items: ["Pomodoro Timer", "Deep Work Sessions", "Ambient Sounds", "Virtual Focus Spaces", "Synced Co-working", "Distraction Blocking"] },
@@ -22,24 +24,28 @@ const featureGroups = [
   { title: "Wellness & Flow", accent: "from-fuchsia-400 to-emerald-400", items: ["Mood Tracking", "Burnout Detection", "Smart Break Suggestions", "Relaxation Sounds", "Focus Analytics"] },
 ];
 
-type NavLink = { to: string; label: string; mega?: boolean };
-const navLinks: NavLink[] = [
-  { to: "/", label: "Home" },
-  { to: "/features", label: "Features", mega: true },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/support", label: "Support" },
-  { to: "/about", label: "About" },
-];
-
 export function Navbar() {
   const { theme, toggle } = useTheme();
+  const { t, setLang, lang } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [focused, setFocused] = useState(false);
   const { location } = useRouterState();
   const { user } = useAuth();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
+  const isDashboard = location.pathname.startsWith("/dashboard");
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  const navLinks = useMemo(() => ([
+    { to: "/", label: t("home") },
+    { to: "/features", label: t("features"), mega: true },
+    { to: "/pricing", label: t("pricing") },
+    { to: "/support", label: t("support") },
+    { to: "/about", label: t("about") },
+  ]), [t, lang]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -48,13 +54,17 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => { setMobileOpen(false); setMegaOpen(false); }, [location.pathname]);
+  useEffect(() => { setMobileOpen(false); setMegaOpen(false); setQ(""); }, [location.pathname]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
     toast.success("Signed out");
     navigate({ to: "/" });
   };
+
+  const results = q.trim().length > 0
+    ? SEARCH_INDEX.filter(s => (s.title + " " + s.keywords).toLowerCase().includes(q.toLowerCase())).slice(0, 7)
+    : [];
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-3"}`}>
@@ -64,31 +74,21 @@ export function Navbar() {
           {!isHome && (
             <Link to="/" className="ml-1 hidden sm:inline-flex">
               <Button variant="ghost" size="sm" className="rounded-xl gap-1">
-                <ArrowLeft className="h-4 w-4" /> Back home
+                <ArrowLeft className="h-4 w-4" /> {t("backHome")}
               </Button>
             </Link>
           )}
           <nav className="ml-4 hidden items-center gap-1 lg:flex">
-            {navLinks.map((l) =>
+            {navLinks.map((l: any) =>
               l.mega ? (
-                <div
-                  key={l.to}
-                  className="relative"
-                  onMouseEnter={() => setMegaOpen(true)}
-                  onMouseLeave={() => setMegaOpen(false)}
-                >
+                <div key={l.to} className="relative" onMouseEnter={() => setMegaOpen(true)} onMouseLeave={() => setMegaOpen(false)}>
                   <button className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-foreground">
                     {l.label} <ChevronDown className="h-3.5 w-3.5" />
                   </button>
                   {megaOpen && <MegaMenu />}
                 </div>
               ) : (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-foreground [&.active]:text-foreground [&.active]:bg-accent"
-                  activeOptions={{ exact: l.to === "/" }}
-                >
+                <Link key={l.to} to={l.to} className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-foreground [&.active]:text-foreground [&.active]:bg-accent" activeOptions={{ exact: l.to === "/" }}>
                   {l.label}
                 </Link>
               ),
@@ -96,18 +96,37 @@ export function Navbar() {
           </nav>
 
           <div className="ml-auto flex items-center gap-1.5">
-            <div className="relative hidden md:block">
+            <div className="relative hidden md:block" ref={searchRef}>
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Search anything…" className="h-9 w-44 rounded-xl border-transparent bg-muted/60 pl-8 focus-visible:w-56 focus-visible:bg-background transition-all" />
+              <Input
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setTimeout(() => setFocused(false), 150)}
+                placeholder={t("search")}
+                className="h-9 w-44 rounded-xl border-transparent bg-muted/60 pl-8 focus-visible:w-56 focus-visible:bg-background transition-all"
+              />
+              {focused && results.length > 0 && (
+                <div className="absolute right-0 top-full mt-2 w-72 overflow-hidden rounded-xl border border-border/60 bg-popover shadow-xl">
+                  {results.map(r => (
+                    <button key={r.href} onMouseDown={() => navigate({ to: r.href as any })} className="block w-full px-3 py-2 text-left text-sm hover:bg-accent">
+                      <div className="font-medium">{r.title}</div>
+                      <div className="text-xs text-muted-foreground">{r.href}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <Button variant="ghost" size="icon" className="rounded-xl"><Bell className="h-4 w-4" /></Button>
+            {user && isDashboard && (
+              <Link to="/dashboard/notifications"><Button variant="ghost" size="icon" className="rounded-xl"><Bell className="h-4 w-4" /></Button></Link>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-xl"><Globe className="h-4 w-4" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-xl">
-                {["English","Français","Español","Português","العربية","中文","Deutsch"].map(l => (
-                  <DropdownMenuItem key={l}>{l}</DropdownMenuItem>
+                {LANGUAGES.map(l => (
+                  <DropdownMenuItem key={l.code} onClick={() => { setLang(l.code); toast.success(`Language: ${l.label}`); }}>{l.label}</DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -119,19 +138,17 @@ export function Navbar() {
                 <>
                   <Link to="/dashboard">
                     <Button size="sm" className="rounded-xl gradient-brand text-primary-foreground">
-                      <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Dashboard
+                      <Sparkles className="mr-1.5 h-3.5 w-3.5" /> {t("dashboard")}
                     </Button>
                   </Link>
-                  <Button size="sm" variant="ghost" className="rounded-xl" onClick={signOut}>
-                    <LogOut className="h-4 w-4" />
-                  </Button>
+                  <Button size="sm" variant="ghost" className="rounded-xl" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
                 </>
               ) : (
                 <>
-                  <Link to="/login"><Button variant="ghost" size="sm" className="rounded-xl">Login</Button></Link>
+                  <Link to="/login"><Button variant="ghost" size="sm" className="rounded-xl">{t("login")}</Button></Link>
                   <Link to="/signup">
                     <Button size="sm" className="rounded-xl gradient-brand text-primary-foreground shadow-md shadow-emerald-500/20 hover:opacity-90">
-                      <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Sign Up
+                      <Sparkles className="mr-1.5 h-3.5 w-3.5" /> {t("signup")}
                     </Button>
                   </Link>
                 </>
@@ -146,19 +163,19 @@ export function Navbar() {
         {mobileOpen && (
           <div className="glass mt-2 rounded-2xl p-3 lg:hidden">
             <div className="flex flex-col">
-              {navLinks.map(l => (
+              {navLinks.map((l: any) => (
                 <Link key={l.to} to={l.to} className="rounded-lg px-3 py-2 text-sm hover:bg-accent">{l.label}</Link>
               ))}
               <div className="mt-2 flex gap-2">
                 {user ? (
                   <>
-                    <Link to="/dashboard" className="flex-1"><Button className="w-full rounded-xl gradient-brand text-primary-foreground">Dashboard</Button></Link>
+                    <Link to="/dashboard" className="flex-1"><Button className="w-full rounded-xl gradient-brand text-primary-foreground">{t("dashboard")}</Button></Link>
                     <Button variant="outline" className="rounded-xl" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
                   </>
                 ) : (
                   <>
-                    <Link to="/login" className="flex-1"><Button variant="outline" className="w-full rounded-xl">Login</Button></Link>
-                    <Link to="/signup" className="flex-1"><Button className="w-full rounded-xl gradient-brand text-primary-foreground">Sign Up</Button></Link>
+                    <Link to="/login" className="flex-1"><Button variant="outline" className="w-full rounded-xl">{t("login")}</Button></Link>
+                    <Link to="/signup" className="flex-1"><Button className="w-full rounded-xl gradient-brand text-primary-foreground">{t("signup")}</Button></Link>
                   </>
                 )}
               </div>
@@ -182,9 +199,7 @@ function MegaMenu() {
             </div>
             <ul className="space-y-1.5">
               {g.items.map((i) => (
-                <li key={i}>
-                  <a className="block rounded-md px-2 py-1 text-sm text-foreground/85 transition-colors hover:bg-accent hover:text-foreground">{i}</a>
-                </li>
+                <li key={i}><a className="block rounded-md px-2 py-1 text-sm text-foreground/85 transition-colors hover:bg-accent hover:text-foreground">{i}</a></li>
               ))}
             </ul>
           </div>

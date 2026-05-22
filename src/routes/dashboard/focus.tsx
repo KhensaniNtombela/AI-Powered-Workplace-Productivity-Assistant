@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Pause, Play, RotateCcw, X, Music } from "lucide-react";
+import { usePlayer } from "@/components/player-provider";
+import { TRACKS } from "@/lib/audio-library";
 
 export const Route = createFileRoute("/dashboard/focus")({ component: Focus });
 
@@ -20,10 +22,12 @@ const quotes = [
 
 function Focus() {
   const nav = useNavigate();
+  const player = usePlayer();
   const [mode, setMode] = useState(modes[0]);
   const [left, setLeft] = useState(mode.min * 60);
   const [running, setRunning] = useState(false);
   const [quote] = useState(() => quotes[Math.floor(Math.random() * quotes.length)]);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const total = mode.min * 60;
   const t = useRef<number | null>(null);
 
@@ -42,7 +46,6 @@ function Focus() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950 text-white">
-      {/* animated background */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_30%_20%,#0ea5e9_0%,transparent_50%),radial-gradient(circle_at_70%_80%,#10b981_0%,transparent_55%),radial-gradient(circle_at_50%_50%,#0f172a_0%,#020617_100%)]" />
       <div className="absolute inset-0 -z-10 opacity-20 dot-grid" />
       <div className="absolute -top-32 left-1/2 -z-10 h-[600px] w-[800px] -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl animate-float" />
@@ -62,14 +65,8 @@ function Focus() {
         <div className="relative">
           <svg width={320} height={320} className="-rotate-90">
             <circle cx={160} cy={160} r={r} stroke="rgba(255,255,255,0.1)" strokeWidth={10} fill="none" />
-            <circle cx={160} cy={160} r={r} stroke="url(#grad)" strokeWidth={10} strokeLinecap="round" fill="none"
-                    strokeDasharray={c} strokeDashoffset={c - (c * pct) / 100} className="transition-[stroke-dashoffset] duration-700" />
-            <defs>
-              <linearGradient id="grad" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0%" stopColor="#10b981" />
-                <stop offset="100%" stopColor="#22d3ee" />
-              </linearGradient>
-            </defs>
+            <circle cx={160} cy={160} r={r} stroke="url(#grad)" strokeWidth={10} strokeLinecap="round" fill="none" strokeDasharray={c} strokeDashoffset={c - (c * pct) / 100} className="transition-[stroke-dashoffset] duration-700" />
+            <defs><linearGradient id="grad" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stopColor="#10b981" /><stop offset="100%" stopColor="#22d3ee" /></linearGradient></defs>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="text-[11px] uppercase tracking-[0.3em] text-white/60">Current task</div>
@@ -84,24 +81,41 @@ function Focus() {
           <Button onClick={() => setRunning(r => !r)} className="rounded-full px-8 py-6 text-base gradient-brand text-primary-foreground shadow-2xl shadow-emerald-500/40">
             {running ? <><Pause className="mr-2 h-5 w-5" /> Pause</> : <><Play className="mr-2 h-5 w-5" /> Start</>}
           </Button>
-          <Button variant="ghost" className="text-white hover:bg-white/10"><Music className="h-4 w-4" /></Button>
+          <Button variant="ghost" onClick={() => setPickerOpen(v => !v)} className="text-white hover:bg-white/10"><Music className="h-4 w-4" /></Button>
         </div>
+
+        {pickerOpen && (
+          <div className="mt-6 grid w-full max-w-md gap-2 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
+            <div className="text-xs uppercase tracking-widest text-white/60">Focus music</div>
+            {TRACKS.map(t => {
+              const isCur = player.current?.id === t.id;
+              return (
+                <button key={t.id} onClick={() => isCur ? player.toggle() : player.play(t)} className={`flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition-colors ${isCur ? "bg-emerald-500/20" : "hover:bg-white/10"}`}>
+                  <div>
+                    <div className="font-medium">{t.title}</div>
+                    <div className="text-xs text-white/60">{t.artist}</div>
+                  </div>
+                  {isCur && player.playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         <p className="mt-10 max-w-md text-center text-sm italic text-white/70">"{quote}"</p>
 
-        {/* mini player */}
-        <div className="mt-10 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 backdrop-blur">
-          <div className="h-9 w-9 rounded-lg gradient-brand" />
-          <div className="text-xs">
-            <div className="font-semibold">Rainfall · Theta Waves</div>
-            <div className="text-white/60">Adaptive · 28 min left</div>
+        {player.current && (
+          <div className="mt-10 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 backdrop-blur">
+            <div className="h-9 w-9 rounded-lg gradient-brand" />
+            <div className="text-xs">
+              <div className="font-semibold">{player.current.title}</div>
+              <div className="text-white/60">{player.playing ? "Playing" : "Paused"} · {player.current.source ?? "Local"}</div>
+            </div>
+            <Button size="sm" variant="ghost" onClick={player.toggle} className="text-white hover:bg-white/10">
+              {player.playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </Button>
           </div>
-          <div className="flex gap-0.5">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <span key={i} className="w-0.5 rounded-full bg-emerald-400" style={{ height: `${8 + (i*7)%18}px`, animation: `pulse 1.4s ${i*80}ms infinite` }} />
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

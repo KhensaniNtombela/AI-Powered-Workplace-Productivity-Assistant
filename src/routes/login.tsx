@@ -11,7 +11,10 @@ import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (s: Record<string, unknown>) => ({ verify: s.verify === "1" ? "1" : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    verify: s.verify === "1" ? "1" : undefined,
+    redirect: typeof s.redirect === "string" ? s.redirect : undefined,
+  }),
   component: LoginPage,
 });
 
@@ -22,7 +25,9 @@ function LoginPage() {
 export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
   const isSignup = mode === "signup";
   const navigate = useNavigate();
-  const search = (useSearch({ strict: false }) as { verify?: string }) ?? {};
+  const search = (useSearch({ strict: false }) as { verify?: string; redirect?: string }) ?? {};
+  const back = search.redirect || "/";
+  const dest = search.redirect || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -35,8 +40,7 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
     try {
       if (isSignup) {
         const { error } = await supabase.auth.signUp({
-          email,
-          password,
+          email, password,
           options: {
             emailRedirectTo: `${window.location.origin}/login`,
             data: { display_name: name || email.split("@")[0] },
@@ -55,11 +59,10 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
           return;
         }
         toast.success("Welcome back");
-        navigate({ to: "/dashboard" });
+        navigate({ to: dest as any });
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Something went wrong";
-      toast.error(message);
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -67,14 +70,10 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
 
   const google = async () => {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/dashboard` });
-    if (result.error) {
-      toast.error("Google sign-in failed");
-      setLoading(false);
-      return;
-    }
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}${dest}` });
+    if (result.error) { toast.error("Google sign-in failed"); setLoading(false); return; }
     if (result.redirected) return;
-    navigate({ to: "/dashboard" });
+    navigate({ to: dest as any });
   };
 
   return (
@@ -94,9 +93,9 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
       </div>
       <div className="flex flex-col p-6 sm:p-8">
         <div>
-          <Link to="/">
+          <Link to={back as any}>
             <Button variant="ghost" size="sm" className="rounded-xl gap-1">
-              <ArrowLeft className="h-4 w-4" /> Back home
+              <ArrowLeft className="h-4 w-4" /> Back
             </Button>
           </Link>
         </div>
@@ -106,15 +105,13 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
 
             {sent ? (
               <div className="text-center">
-                <div className="mx-auto grid h-12 w-12 place-items-center rounded-full gradient-brand text-primary-foreground">
-                  <Mail className="h-5 w-5" />
-                </div>
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-full gradient-brand text-primary-foreground"><Mail className="h-5 w-5" /></div>
                 <h1 className="mt-4 text-2xl font-semibold">Verify your email</h1>
                 <p className="mt-2 text-sm text-muted-foreground">
                   We sent a verification link to <b>{email}</b>. Click it to activate your account, then come back to log in.
                 </p>
-                <Button className="mt-6 w-full rounded-xl gradient-brand text-primary-foreground" onClick={() => { setSent(false); }}>
-                  Back to {isSignup ? "sign up" : "login"}
+                <Button className="mt-6 w-full rounded-xl gradient-brand text-primary-foreground" onClick={() => navigate({ to: "/login" })}>
+                  Back to login
                 </Button>
               </div>
             ) : (
@@ -129,15 +126,16 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
                   </div>
                 )}
                 <form className="mt-6 grid gap-3" onSubmit={submit}>
-                  {isSignup && (
-                    <>
-                      <Label>Full name</Label>
-                      <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" required />
-                    </>
-                  )}
-                  <Label>Work email</Label>
-                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" required />
-                  <Label>Password</Label>
+                  {isSignup && (<>
+                    <Label>Full name</Label>
+                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" required />
+                  </>)}
+                  <Label>Email</Label>
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
+                  <div className="flex items-center justify-between">
+                    <Label>Password</Label>
+                    {!isSignup && <Link to="/forgot-password" className="text-xs text-emerald-500 hover:underline">Forgot password?</Link>}
+                  </div>
                   <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} placeholder="••••••••" required />
                   <Button disabled={loading} className="mt-2 rounded-xl gradient-brand text-primary-foreground">
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -148,15 +146,13 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
                   <div className="h-px flex-1 bg-border" /> or <div className="h-px flex-1 bg-border" />
                 </div>
                 <div className="grid gap-2">
-                  <Button variant="outline" className="rounded-xl" onClick={google} disabled={loading}>
-                    Continue with Google
-                  </Button>
+                  <Button variant="outline" className="rounded-xl" onClick={google} disabled={loading}>Continue with Google</Button>
                 </div>
                 <div className="mt-6 text-center text-sm text-muted-foreground">
                   {isSignup ? (
-                    <>Already have an account? <Link to="/login" className="text-emerald-500 hover:underline">Log in</Link></>
+                    <>Already have an account? <Link to="/login" search={{ redirect: search.redirect } as any} className="text-emerald-500 hover:underline">Log in</Link></>
                   ) : (
-                    <>New to FlowState? <Link to="/signup" className="text-emerald-500 hover:underline">Sign up</Link></>
+                    <>New to FlowState? <Link to="/signup" search={{ redirect: search.redirect } as any} className="text-emerald-500 hover:underline">Sign up</Link></>
                   )}
                 </div>
               </>
