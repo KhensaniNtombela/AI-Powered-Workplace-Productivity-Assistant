@@ -59,7 +59,8 @@ export function AuthScreen({ mode }: { mode: "login" | "signup" }) {
           return;
         }
         toast.success("Welcome back");
-        navigate({ to: dest as any });
+        // Use full navigation so query strings in `dest` (e.g. OAuth consent) survive.
+        window.location.href = dest;
       }
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
